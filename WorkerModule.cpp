@@ -8,7 +8,7 @@
 
 #include <ppbox/demux/DemuxerModule.h>
 
-#include <peer/Name.h>
+#include <peer/peer/Name.h>
 
 #include <framework/filesystem/Path.h>
 #include <framework/logger/LoggerStreamRecord.h>

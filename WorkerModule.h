@@ -3,7 +3,7 @@
 #ifndef _PPBOX_PEER_WORKER_WORKER_MODULE_H_
 #define _PPBOX_PEER_WORKER_WORKER_MODULE_H_
 
-#include <peer/Interface.h>
+#include <peer/peer/Interface.h>
 
 #include <framework/library/Library.h>
 
