@@ -3,10 +3,15 @@
 #ifndef _PPBOX_PEER_WORKER_WORKER_MODULE_H_
 #define _PPBOX_PEER_WORKER_WORKER_MODULE_H_
 
+#ifndef PPBOX_DISABLE_DAC
+#include <ppbox/dac/Dac.h>
+#endif
+
+#include <ppbox/common/PortManager.h>
+
 #include <peer/peer/Interface.h>
 
 #include <framework/library/Library.h>
-
 #include <framework/timer/TimeTraits.h>
 
 namespace ppbox
@@ -29,8 +34,9 @@ namespace ppbox
             virtual void shutdown();
 
 
-		public:
-			boost::system::error_code Set(const char* ,const int);
+        public:
+            void SubmitPeerLog(std::string const & dac);
+            boost::system::error_code Set(const char* ,const int);
         private:
             void handle_timer(
                 boost::system::error_code const & ec);
@@ -41,16 +47,22 @@ namespace ppbox
             void stop_peer();
 
             void update_stat();
+            
+            void check_process();
 
         private:
+#ifndef PPBOX_DISABLE_DAC
+            ppbox::dac::Dac& dac_;
+#endif
+            ppbox::common::PortManager& portMgr_;
             boost::uint16_t port_;
-
         private:
             clock_timer timer_;
 #ifndef PPBOX_STATIC_BIND_PEER_LIB			
             framework::library::Library lib_;
 #endif
             NETINTERFACE ipeer_;
+            
         };
 
     } // namespace peer_worker

@@ -2,14 +2,16 @@
 
 #include "ppbox/peer_worker/Common.h"
 #include "ppbox/peer_worker/WorkerModule.h"
-
 #include "ppbox/peer_worker/PPConfig.h"
 //#include "ppbox/peer_worker/Utils.h"
 
+
 #include <ppbox/demux/DemuxerModule.h>
+
 
 #include <peer/peer/Name.h>
 
+#include <framework/process/Process.h>
 #include <framework/filesystem/Path.h>
 #include <framework/logger/LoggerStreamRecord.h>
 #include <framework/system/LogicError.h>
@@ -23,17 +25,28 @@ using namespace boost::system;
 
 FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("WorkerModule", 0);
 
+static ppbox::peer_worker::WorkerModule* g_workerModule = NULL;
+static void SubmitStopLog(std::string dac)
+{
+    g_workerModule->SubmitPeerLog(dac);
+}
+
 namespace ppbox
 {
     namespace peer_worker
     {
-
         WorkerModule::WorkerModule(
             util::daemon::Daemon & daemon)
             : ppbox::common::CommonModuleBase<WorkerModule>(daemon, "WorkerModule")
+#ifndef PPBOX_DISABLE_DAC
+            , dac_(util::daemon::use_module<ppbox::dac::Dac>(daemon))
+#endif
+            , portMgr_(util::daemon::use_module<ppbox::common::PortManager>(daemon))
             , port_(9000)
             , timer_(io_svc())
         {
+            g_workerModule = this;
+
             memset(&ipeer_, 0, sizeof(ipeer_));
             daemon.config().register_module("vod_proxy")
                 (MaxPeerConnection_,new MaxPeerConnection(*this))
@@ -58,13 +71,12 @@ namespace ppbox
             return ec;
         }
 
-		
-		boost::system::error_code WorkerModule::Set(const char* pKey,const int i)
-		{
-			std::cout<<"WorkerModule:"<<pKey<<" "<<i<<std::endl;
-			return boost::system::error_code();
-		}
-
+        void WorkerModule::SubmitPeerLog(std::string const & dac)
+        {
+#ifndef PPBOX_DISABLE_DAC
+            dac_.submit_peer(dac);
+#endif
+        }
 
         void WorkerModule::shutdown()
         {
@@ -80,6 +92,9 @@ namespace ppbox
                 return;
             timer_.expires_from_now(Duration::seconds(1));
             timer_.async_wait(boost::bind(&WorkerModule::handle_timer, this, _1));
+#ifndef PPBOX_CONTAIN_PEER_WORKER
+            check_process();
+#endif            
             update_stat();
         }
 
@@ -91,8 +106,8 @@ namespace ppbox
             std::string log_path = (exe_dir / "peer.log").file_string();
             //freopen(log_path.c_str(), "w", stderr);
 #ifdef PPBOX_STATIC_BIND_PEER_LIB
-			error_code ec;
-			TS_XXXX(&ipeer_);		
+            error_code ec;
+            TS_XXXX(&ipeer_);		
 #else
             error_code ec = 
                 lib_.open(::peer::name_string());
@@ -112,7 +127,6 @@ namespace ppbox
             //memset(&start_param, 0, sizeof(start_param));
             start_param.szDiskPath[0] = '\0';
             start_param.szConfigPath[0] = '\0';
-            start_param.szTestDomain[0] = '\0';
             start_param.szPeerGuid[0] = '\0';
             start_param.uSize = sizeof(start_param);
             start_param.hWnd = 0;
@@ -120,10 +134,9 @@ namespace ppbox
             start_param.aIndexServer[0].szIndexDomain[0] = '\0';
             start_param.bUseDisk = 1;
             start_param.usTcpPort = 0;
-            start_param.bIsTestCore = 0;
+            start_param.submit_stop_log = SubmitStopLog;
             start_param.bHttpProxyEnabled = 1;
             start_param.bReadOnly = 0;
-            start_param.cPeerCatalog = PCAT_PPNX;
 
             {
                 std::string host = "192.168.43.98";
@@ -187,12 +200,6 @@ namespace ppbox
             }
 
             {
-                bool enable_cache = false; //configs["enable-cache"].as<bool>();
-                start_param.bUseCache = enable_cache;
-                LOG_S(Logger::kLevelInfor, "Config: --enable-cache=" << enable_cache);
-            }
-
-            {
                 bool enable_push = false; //configs["enable-push"].as<bool>();
                 start_param.bUsePush = enable_push;
                 LOG_S(Logger::kLevelInfor, "Config: --enable-push=" << enable_push);
@@ -202,6 +209,8 @@ namespace ppbox
             if (ipeer_.Startup != NULL) {
                 ipeer_.Startup(&start_param);
             }
+
+            portMgr_.set_port(ppbox::common::vod,port_);
 
             return ec;
         }
@@ -217,6 +226,20 @@ namespace ppbox
 #ifndef PPBOX_STATIC_BIND_PEER_LIB
             lib_.close();
 #endif
+        }
+
+        void WorkerModule::check_process()
+        {
+#ifndef PPBOX_CONTAIN_PEER_WORKER
+#ifdef __APPLE__
+            int id = framework::this_process::parent_id();
+            if(1 == id)
+             {
+                LOG_S(Logger::kLevelError, "[check_process] Main Process is died");
+                exit(0);
+             }
+#endif
+#endif           
         }
 
         void WorkerModule::update_stat()
@@ -245,7 +268,7 @@ namespace ppbox
                         LOG_S(Logger::kLevelDebug2, "demux_stat: " 
                             << " " << demux_stat.demux_data().rid 
                             << " " << status_str[demux_stat.state() < 5 ? demux_stat.state() : 5] 
-                            << " " << demux_stat.get_buf_time());
+                        << " " << demux_stat.get_buf_time());
                         ipeer_.SetRestPlayTime(demux_stat.demux_data().rid, strlen(demux_stat.demux_data().rid), demux_stat.get_buf_time());
                 }
             }

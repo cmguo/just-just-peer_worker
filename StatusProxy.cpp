@@ -146,6 +146,7 @@ namespace ppbox
         {
             error_code ec;
             mgr_->start(addr_, ec);
+            ec.clear();
             return ec;
         }
 
