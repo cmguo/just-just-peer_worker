@@ -6,26 +6,26 @@
 #pragma pack(push, 1)
 
 typedef struct _UUID {
-    unsigned long  Data1;
-    unsigned short Data2;
-    unsigned short Data3;
-    unsigned char  Data4[8];
+    boost::uint32_t  Data1;
+    boost::uint16_t Data2;
+    boost::uint16_t Data3;
+    boost::uint8_t  Data4[8];
 } UUID;
 
 #include <string.h>
 
 typedef UUID RID;
 
-const int BITMAP_SIZE = 50;
+const uint32_t BITMAP_SIZE = 50;
 
-const int UINT8_MAX_VALUE = 256;
+const uint32_t UINT8_MAX_VALUE = 256;
 
 const uint32_t LIVEDOWNLOADER_MAX_COUNT = 64;
 
 const int32_t MAX_P2P_DOWNLOADER_COUNT = 100;
 
 
-const int MAX_IP_COUNT = 10;
+const uint32_t MAX_IP_COUNT = 10;
 
 //////////////////////////////////////////////////////////////////////////
 // 公共结构

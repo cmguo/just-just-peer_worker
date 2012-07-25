@@ -14,7 +14,12 @@ namespace ppbox
             struct Block
             {
                 void const * ptr;
-                size_t size;
+                boost::uint32_t size;
+                template <typename Archive>
+                void serialize(Archive & ar)
+                {
+                    ar & size;
+                }
             };
 
         public:

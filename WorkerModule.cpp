@@ -262,14 +262,13 @@ namespace ppbox
             for (stat = stats->first(); &*stat; stat = stats->next(stat)) {
                 ppbox::demux::DemuxerStatistic const & demux_stat = stat->demux_stat;
                 if (demux_stat.get_play_type() == ppbox::demux::DemuxerType::vod
-                    && demux_stat.is_playing_state()
                     && demux_stat.demux_data().rid != NULL
                     && strlen(demux_stat.demux_data().rid) > 0) {
                         LOG_S(Logger::kLevelDebug2, "demux_stat: " 
                             << " " << demux_stat.demux_data().rid 
                             << " " << status_str[demux_stat.state() < 5 ? demux_stat.state() : 5] 
-                        << " " << demux_stat.get_buf_time());
-                        ipeer_.SetRestPlayTime(demux_stat.demux_data().rid, strlen(demux_stat.demux_data().rid), demux_stat.get_buf_time());
+                        << " " << demux_stat.get_buf_time() <<" "<<demux_stat.get_adv_time());
+                        ipeer_.SetRestPlayTime(demux_stat.demux_data().rid, strlen(demux_stat.demux_data().rid), demux_stat.get_buf_time()+demux_stat.get_adv_time());
                 }
             }
         }

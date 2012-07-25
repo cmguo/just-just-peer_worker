@@ -50,11 +50,18 @@ namespace ppbox
             StatusProxy & module_;
         };
 
-        template <typename Archive>
-        void serialize(Archive & ar, SharedStatus::Block & t)
+        struct MyString
         {
-            ar & t.size;
-        }
+            MyString(std::string const & t)
+            : str_(t){}
+            template <typename Archive>
+            void serialize(Archive & ar)
+            {
+                ar & util::serialization::make_sized<boost::uint32_t>(str_);
+            }
+            std::string str_;
+        };
+
 
         class StatusProxy::StatusSession
             : public util::protocol::HttpProxy
@@ -82,7 +89,12 @@ namespace ppbox
                 if (!ec) {
                     std::ostream os(&head_buf_);
                     util::archive::LittleEndianBinaryOArchive<> oa(os);
-                    oa << blocks_;
+                    oa << (boost::uint32_t)blocks_.size();
+                    for (std::map<std::string, SharedStatus::Block>::const_iterator iter1 = blocks_.begin();
+                         iter1 != blocks_.end(); ++iter1) {
+                        oa << MyString(iter1->first);
+                        oa << iter1->second;
+                    }
                     buffers_.push_back(head_buf_.data());
                     for (std::map<std::string, SharedStatus::Block>::const_iterator iter = blocks_.begin(); 
                         iter != blocks_.end(); ++iter) {
