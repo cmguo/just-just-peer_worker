@@ -8,7 +8,7 @@
 #include <util/protocol/http/HttpProxyManager.h>
 #include <util/serialization/stl/map.h>
 #include <util/archive/LittleEndianBinaryOArchive.h>
-#include <util/buffers/BufferSize.h>
+#include <util/buffers/BuffersSize.h>
 using namespace util::protocol;
 
 #include <framework/logger/LoggerStreamRecord.h>
@@ -88,7 +88,7 @@ namespace ppbox
                         iter != blocks_.end(); ++iter) {
                             buffers_.push_back(boost::asio::const_buffer(iter->second.ptr, iter->second.size));
                     }
-                    len = util::buffers::buffer_size(buffers_);
+                    len = util::buffers::buffers_size(buffers_);
                 }
                 resp(ec, (size_t)len);
             }
