@@ -16,16 +16,16 @@ typedef struct _UUID {
 
 typedef UUID RID;
 
-const uint32_t BITMAP_SIZE = 50;
+const boost::uint32_t BITMAP_SIZE = 50;
 
-const uint32_t UINT8_MAX_VALUE = 256;
+const boost::uint32_t UINT8_MAX_VALUE = 256;
 
-const uint32_t LIVEDOWNLOADER_MAX_COUNT = 64;
+const boost::uint32_t LIVEDOWNLOADER_MAX_COUNT = 64;
 
-const int32_t MAX_P2P_DOWNLOADER_COUNT = 100;
+const boost::int32_t MAX_P2P_DOWNLOADER_COUNT = 100;
 
 
-const uint32_t MAX_IP_COUNT = 10;
+const boost::uint32_t MAX_IP_COUNT = 10;
 
 //////////////////////////////////////////////////////////////////////////
 // 公共结构
@@ -509,7 +509,7 @@ struct DOWNLOADDRIVER_STATISTIC_INFO
 
 struct LIVE_DOWNLOADDRIVER_STATISTIC_INFO
 {
-    uint32_t LiveDownloadDriverID;
+    boost::uint32_t LiveDownloadDriverID;
     SPEED_INFO LiveHttpSpeedInfo;
     SPEED_INFO LiveP2PSpeedInfo;
     SPEED_INFO LiveP2PSubPieceSpeedInfo;
@@ -566,7 +566,7 @@ struct PEER_UPLOAD_INFO
         Clear();
     }
 
-    uint32_t ip;
+    boost::uint32_t ip;
     boost::uint16_t port;
     boost::uint32_t upload_speed;
     PEER_INFO peer_info;

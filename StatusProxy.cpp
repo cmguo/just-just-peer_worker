@@ -84,7 +84,7 @@ namespace ppbox
             virtual void local_process(
                 response_type const & resp)
             {
-                boost::uint32_t len = 0;
+                size_t len = 0;
                 error_code ec = mgr_.get_memory_blocks(blocks_);
                 if (!ec) {
                     std::ostream os(&head_buf_);
@@ -102,7 +102,7 @@ namespace ppbox
                     }
                     len = util::buffers::buffers_size(buffers_);
                 }
-                resp(ec, (size_t)len);
+                resp(ec, len);
             }
 
             virtual void transfer_response_data(
