@@ -10,7 +10,8 @@
 #include <framework/string/Format.h>
 #include <framework/string/Base16.h>
 #include <framework/system/BytesOrder.h>
-#include <framework/logger/LoggerStreamRecord.h>
+#include <framework/logger/Logger.h>
+#include <framework/logger/StreamRecord.h>
 using namespace framework::process;
 using namespace framework::string;
 using namespace framework::system;
@@ -113,7 +114,7 @@ namespace ppbox
                 ProcessStat stat;
                 if (get_process_stat(cache_->pid, stat) 
                     || stat.state == ProcessStat::zombie) {
-                        LOG_S(Logger::kLevelAlarm, "[get_memory_blocks] old pid(" << cache_->pid << ") dead");
+                        LOG_WARN("[get_memory_blocks] old pid(" << cache_->pid << ") dead");
                         cache_->pid = 0;
                 }
             }
@@ -123,7 +124,7 @@ namespace ppbox
                 error_code ec = enum_process(name_string(), threads);
                 if (ec || threads.empty()) {
 		    std::cout<<"enum_process not found"<<std::endl;
-		    LOG_S(Logger::kLevelAlarm, "[get_memory_blocks] enum_process not found");
+		    LOG_WARN("[get_memory_blocks] enum_process not found");
 		    ProcessInfo temp;
 		    temp.pid = getpid();
 		    threads.push_back(temp);
@@ -143,18 +144,18 @@ namespace ppbox
                     if (cache_->root_shm.address() == NULL)
                         continue;
                     cache_->pid = th.pid;
-                    LOG_S(Logger::kLevelDebug, "[get_memory_blocks] find pid " << cache_->pid);
+                    LOG_DEBUG("[get_memory_blocks] find pid " << cache_->pid);
                     break;
                 }
             }
             if (cache_->pid == 0) {
-                LOG_S(Logger::kLevelAlarm, "[get_memory_blocks] pid not find");
+                LOG_WARN("[get_memory_blocks] pid not find");
                 return error::not_open;
             }
 
             Block block = {cache_->root_shm.address(), sizeof(STASTISTIC_INFO)};
             blocks.insert(std::make_pair("PPVIDEO_" + format(cache_->pid), block));
-            LOG_S(Logger::kLevelDebug1, "memory PPVIDEO_" << cache_->pid);
+            LOG_TRACE("memory PPVIDEO_" << cache_->pid);
 
             STASTISTIC_INFO const * si = (STASTISTIC_INFO const *)cache_->root_shm.address();
 
@@ -180,7 +181,7 @@ namespace ppbox
                         sizeof(DOWNLOADDRIVER_STATISTIC_INFO) 
                         + sizeof(HTTP_DOWNLOADER_INFO) * dsi->HttpDownloaderCount};
                     blocks.insert(std::make_pair(driver_name, block));
-                    LOG_S(Logger::kLevelDebug1, "memory " << driver_name);
+                    LOG_TRACE("memory " << driver_name);
                 }
             }
 
@@ -206,7 +207,7 @@ namespace ppbox
                         sizeof(LIVE_DOWNLOADDRIVER_STATISTIC_INFO) 
                         };
                     blocks.insert(std::make_pair(driver_name, block));
-                    LOG_S(Logger::kLevelDebug1, "memory " << driver_name);
+                    LOG_TRACE("memory " << driver_name);
                 }
             }
 
@@ -236,7 +237,7 @@ namespace ppbox
                         sizeof(P2PDOWNLOADER_STATISTIC_INFO)
                         + sizeof(P2P_CONNECTION_INFO) * BytesOrder::little_endian_to_host_short(psi->PeerCount)};
                     blocks.insert(std::make_pair(downloader_name, block));
-                    LOG_S(Logger::kLevelDebug1, "memory " << downloader_name);
+                    LOG_TRACE("memory " << downloader_name);
                 }
             }
 
@@ -262,7 +263,7 @@ namespace ppbox
                         sizeof(UPLOAD_INFO)
                         };
                     blocks.insert(std::make_pair(upload_name, block));
-                    LOG_S(Logger::kLevelDebug1, "memory " << upload_name);
+                    LOG_TRACE("memory " << upload_name);
                 }
             }
 

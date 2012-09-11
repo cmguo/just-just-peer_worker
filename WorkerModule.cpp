@@ -3,24 +3,19 @@
 #include "ppbox/peer_worker/Common.h"
 #include "ppbox/peer_worker/WorkerModule.h"
 #include "ppbox/peer_worker/PPConfig.h"
-//#include "ppbox/peer_worker/Utils.h"
-
-
-#include <ppbox/demux/DemuxerModule.h>
-
+#include "ppbox/peer_worker/ClientStatus.h"
 
 #include <peer/peer/Name.h>
 
 #include <framework/process/Process.h>
 #include <framework/filesystem/Path.h>
-#include <framework/logger/LoggerStreamRecord.h>
+#include <framework/logger/Logger.h>
+#include <framework/logger/StreamRecord.h>
 #include <framework/system/LogicError.h>
-using framework::logger::Logger;
 
 #include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 using namespace boost::system;
-
 
 
 FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("WorkerModule", 0);
@@ -35,6 +30,7 @@ namespace ppbox
 {
     namespace peer_worker
     {
+
         WorkerModule::WorkerModule(
             util::daemon::Daemon & daemon)
             : ppbox::common::CommonModuleBase<WorkerModule>(daemon, "WorkerModule")
@@ -119,7 +115,7 @@ namespace ppbox
             if (ts) {
                 ts(&ipeer_);
             } else {
-                LOG_S(Logger::kLevelAlarm, "find symbol TS_XXXX failed");
+                LOG_WARN("find symbol TS_XXXX failed");
                 return framework::system::logic_error::failed_some;
             }
 #endif
@@ -145,19 +141,19 @@ namespace ppbox
                 //
                 strncpy(start_param.aIndexServer[0].szIndexDomain, host.c_str(), sizeof(start_param.aIndexServer[0].szIndexDomain)-1);
                 start_param.aIndexServer[0].usIndexPort = port;
-                LOG_S(Logger::kLevelInfor, "Config: --bootstrap=" << host << ":" << port);
+                LOG_INFO("Config: --bootstrap=" << host << ":" << port);
             }
 
             {
                 //boost::uint16_t proxy_port = 80;//configs["proxy-port"].as<boost::uint16_t>();
                 start_param.usHttpProxyPort = port_;
-                LOG_S(Logger::kLevelInfor, "Config: --http-port=" << port_);
+                LOG_INFO("Config: --http-port=" << port_);
             }
 
             {
                 boost::uint16_t udp_port = 5829;//configs["udp-port"].as<boost::uint16_t>();
                 start_param.usUdpPort = udp_port;
-                LOG_S(Logger::kLevelInfor, "Config: --udp-port=" << udp_port);
+                LOG_INFO("Config: --udp-port=" << udp_port);
             }
 
             boost::filesystem::path ph_root = framework::filesystem::temp_path() / "vod";
@@ -172,11 +168,11 @@ namespace ppbox
                 std::string data_dir = (ph_root / "data").file_string();
                 size_t max_length = sizeof(start_param.szDiskPath) - 1;
                 if (data_dir.length() >= max_length) {
-                    LOG_S(Logger::kLevelInfor, "data directory size too large, size = " << data_dir.length() << ", max = " << max_length);
+                    LOG_INFO("data directory size too large, size = " << data_dir.length() << ", max = " << max_length);
                     return framework::system::logic_error::invalid_argument;
                 }
                 strncpy(start_param.szDiskPath, data_dir.c_str(), max_length);
-                LOG_S(Logger::kLevelInfor, "Config: --data-dir=" << data_dir);
+                LOG_INFO("Config: --data-dir=" << data_dir);
             }
 
             {
@@ -184,11 +180,11 @@ namespace ppbox
                 std::string config_dir = (ph_root / "config").file_string();
                 size_t max_length = sizeof(start_param.szConfigPath) - 1;
                 if (config_dir.length() >= max_length) {
-                    LOG_S(Logger::kLevelInfor, "config directory size too large, size = " << config_dir.length() << ", max = " << max_length);
+                    LOG_INFO("config directory size too large, size = " << config_dir.length() << ", max = " << max_length);
                     return framework::system::logic_error::invalid_argument;
                 }
                 strncpy(start_param.szConfigPath, config_dir.c_str(), max_length);
-                LOG_S(Logger::kLevelInfor, "Config: --config-dir=" << config_dir);
+                LOG_INFO("Config: --config-dir=" << config_dir);
             }
 
             if (0)
@@ -196,13 +192,13 @@ namespace ppbox
                 std::string data_dir_limit = "2GB";//configs["data-dir-limit"].as<string>();
                 boost::uint64_t data_limit = 0;
                 start_param.ullDiskLimit = data_limit;
-                LOG_S(Logger::kLevelInfor, "Config: --data-dir-limit=" << data_limit);
+                LOG_INFO("Config: --data-dir-limit=" << data_limit);
             }
 
             {
                 bool enable_push = false; //configs["enable-push"].as<bool>();
                 start_param.bUsePush = enable_push;
-                LOG_S(Logger::kLevelInfor, "Config: --enable-push=" << enable_push);
+                LOG_INFO("Config: --enable-push=" << enable_push);
             }
 
             // start up
@@ -219,9 +215,9 @@ namespace ppbox
         {
             if (ipeer_.Cleanup != NULL) {
                 // peer Startup had execute Clearup already
-                LOG_S(Logger::kLevelDebug, "[stop_peer] beg");
+                LOG_DEBUG("[stop_peer] beg");
                 ipeer_.Cleanup();
-                LOG_S(Logger::kLevelDebug, "[stop_peer] end");
+                LOG_DEBUG("[stop_peer] end");
             }
 #ifndef PPBOX_STATIC_BIND_PEER_LIB
             lib_.close();
@@ -235,7 +231,7 @@ namespace ppbox
             int id = framework::this_process::parent_id();
             if(1 == id)
              {
-                LOG_S(Logger::kLevelError, "[check_process] Main Process is died");
+                LOG_ERROR("[check_process] Main Process is died");
                 exit(0);
              }
 #endif
@@ -244,32 +240,17 @@ namespace ppbox
 
         void WorkerModule::update_stat()
         {
-            framework::container::List<ppbox::demux::SharedStatistics> * stats = 
-                (framework::container::List<ppbox::demux::SharedStatistics> *)shared_memory().get_by_id(SHARED_OBJECT_ID_DEMUX);
+            framework::container::List<ppbox::peer_worker::ClientStatus> * stats = 
+                (framework::container::List<ppbox::peer_worker::ClientStatus> *)shared_memory().get_by_id(SHARED_OBJECT_ID_DEMUX);
             if (!stats)
                 return;
 
-            char const * const status_str[] = {
-                "stopped", 
-                "opening", 
-                "opened", 
-                "paused",
-                "playing", 
-                "buffering"
-            };
-
-            ppbox::demux::SharedStatistics::pointer stat;
+            ppbox::peer_worker::ClientStatus::pointer stat;
             for (stat = stats->first(); &*stat; stat = stats->next(stat)) {
-                ppbox::demux::DemuxerStatistic const & demux_stat = stat->demux_stat;
-                if (demux_stat.get_play_type() == ppbox::demux::DemuxerType::vod
-                    && demux_stat.demux_data().rid != NULL
-                    && strlen(demux_stat.demux_data().rid) > 0) {
-                        LOG_S(Logger::kLevelDebug2, "demux_stat: " 
-                            << " " << demux_stat.demux_data().rid 
-                            << " " << status_str[demux_stat.state() < 5 ? demux_stat.state() : 5] 
-                        << " " << demux_stat.get_buf_time() <<" "<<demux_stat.get_adv_time());
-                        ipeer_.SetRestPlayTime(demux_stat.demux_data().rid, strlen(demux_stat.demux_data().rid), demux_stat.get_buf_time()+demux_stat.get_adv_time());
-                }
+                std::string current_url = stat->current_url();
+                size_t buffer_time = stat->buffer_time();
+                LOG_TRACE("client_status: " << " " << current_url << " " << buffer_time);
+                ipeer_.SetRestPlayTime(current_url.c_str(), current_url.size(), buffer_time);
             }
         }
 

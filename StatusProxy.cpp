@@ -11,7 +11,8 @@
 #include <util/buffers/BuffersSize.h>
 using namespace util::protocol;
 
-#include <framework/logger/LoggerStreamRecord.h>
+#include <framework/logger/Logger.h>
+#include <framework/logger/StreamRecord.h>
 using namespace framework::logger;
 
 #include <boost/asio/streambuf.hpp>
@@ -127,7 +128,7 @@ namespace ppbox
             virtual void on_error(
                 boost::system::error_code const & ec)
             {
-                LOG_S(Logger::kLevelAlarm, "on_error " << ec.message());
+                LOG_WARN("on_error " << ec.message());
                 if (ec == boost::asio::error::address_in_use)
                     mgr_.module().get_daemon().post_stop();
             }
