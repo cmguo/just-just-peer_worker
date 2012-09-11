@@ -35,7 +35,7 @@ namespace ppbox
             util::daemon::Daemon & daemon)
             : ppbox::common::CommonModuleBase<WorkerModule>(daemon, "WorkerModule")
 #ifndef PPBOX_DISABLE_DAC
-            , dac_(util::daemon::use_module<ppbox::dac::Dac>(daemon))
+            , dac_(util::daemon::use_module<ppbox::dac::DacModule>(daemon))
 #endif
             , portMgr_(util::daemon::use_module<ppbox::common::PortManager>(daemon))
             , port_(9000)

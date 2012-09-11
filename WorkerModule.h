@@ -52,7 +52,7 @@ namespace ppbox
 
         private:
 #ifndef PPBOX_DISABLE_DAC
-            ppbox::dac::Dac& dac_;
+            ppbox::dac::DacModule& dac_;
 #endif
             ppbox::common::PortManager& portMgr_;
             boost::uint16_t port_;
