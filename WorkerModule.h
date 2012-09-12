@@ -4,7 +4,7 @@
 #define _PPBOX_PEER_WORKER_WORKER_MODULE_H_
 
 #ifndef PPBOX_DISABLE_DAC
-#include <ppbox/dac/Dac.h>
+#include <ppbox/dac/DacModule.h>
 #endif
 
 #include <ppbox/common/PortManager.h>

@@ -5,6 +5,8 @@
 #include "ppbox/peer_worker/PPConfig.h"
 #include "ppbox/peer_worker/ClientStatus.h"
 
+#include <ppbox/dac/DacInfoWorker.h>
+
 #include <peer/peer/Name.h>
 
 #include <framework/process/Process.h>
@@ -67,10 +69,11 @@ namespace ppbox
             return ec;
         }
 
-        void WorkerModule::SubmitPeerLog(std::string const & dac)
+        void WorkerModule::SubmitPeerLog(
+            std::string const & msg)
         {
 #ifndef PPBOX_DISABLE_DAC
-            dac_.submit_peer(dac);
+            dac_.submit(ppbox::dac::DacPeerStatInfo(msg));
 #endif
         }
 
