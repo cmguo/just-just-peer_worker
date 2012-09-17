@@ -25,9 +25,16 @@ namespace ppbox
             >
         {
         public:
-            ClientStatus();
+            ClientStatus()
+                : buffer_time_(0)
+                , adv_expire_(0)
+            {
+                ::memset(url_, 0, sizeof(url_));
+            };
 
-            ~ClientStatus();
+            ~ClientStatus()
+            {
+            };
 
         public:
             std::string current_url()
@@ -63,9 +70,9 @@ namespace ppbox
             }
 
         private:
-            char url_[1024];
             size_t buffer_time_;
             time_t adv_expire_;
+            char url_[1024];
         };
 
     } // namespace peer_worker
