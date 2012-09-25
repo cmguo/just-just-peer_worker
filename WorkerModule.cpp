@@ -22,6 +22,8 @@ using namespace boost::system;
 
 FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("WorkerModule", 0);
 
+#define PEER_BUFFER_SIZE 45
+
 static ppbox::peer_worker::WorkerModule* g_workerModule = NULL;
 static void SubmitStopLog(std::string dac)
 {
@@ -41,10 +43,13 @@ namespace ppbox
 #endif
             , portMgr_(util::daemon::use_module<ppbox::common::PortManager>(daemon))
             , port_(9000)
+            , buffer_size_(PEER_BUFFER_SIZE)
             , timer_(io_svc())
         {
             g_workerModule = this;
-
+            daemon.config().register_module("WorkerModule")
+                 << CONFIG_PARAM_NAME_RDWR("buffer_size", buffer_size_);
+            std::cout<<"WorkerModule buffer_size:"<<(boost::uint32_t)buffer_size_<<std::endl;
             memset(&ipeer_, 0, sizeof(ipeer_));
             daemon.config().register_module("vod_proxy")
                 (MaxPeerConnection_,new MaxPeerConnection(*this))
@@ -136,7 +141,9 @@ namespace ppbox
             start_param.submit_stop_log = SubmitStopLog;
             start_param.bHttpProxyEnabled = 1;
             start_param.bReadOnly = 0;
-
+            start_param.memory_pool_size_in_MB = buffer_size_;
+            LOG_S(Logger::kLevelInfor, "Config: --buffer_size:"<<(boost::uint32_t)buffer_size_);
+            
             {
                 std::string host = "192.168.43.98";
                 host = "ppvabs.pplive.com";

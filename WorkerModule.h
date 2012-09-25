@@ -56,6 +56,7 @@ namespace ppbox
 #endif
             ppbox::common::PortManager& portMgr_;
             boost::uint16_t port_;
+            boost::uint8_t buffer_size_;
         private:
             clock_timer timer_;
 #ifndef PPBOX_STATIC_BIND_PEER_LIB			
