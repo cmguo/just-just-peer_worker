@@ -142,7 +142,7 @@ namespace ppbox
             start_param.bHttpProxyEnabled = 1;
             start_param.bReadOnly = 0;
             start_param.memory_pool_size_in_MB = buffer_size_;
-            LOG_S(Logger::kLevelInfor, "Config: --buffer_size:"<<(boost::uint32_t)buffer_size_);
+            LOG_INFO("Config: --buffer_size:"<<(boost::uint32_t)buffer_size_);
             
             {
                 std::string host = "192.168.43.98";
