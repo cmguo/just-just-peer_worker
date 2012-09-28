@@ -52,9 +52,9 @@ namespace ppbox
 
         public:
             void set_adv_duration(
-                size_t duration)
+                boost::uint32_t duration)
             {
-                adv_expire_ = time(NULL) + duration;
+                adv_expire_ = (boost::uint32_t)time(NULL) + duration;
             }
 
             void set_current_url(
@@ -64,14 +64,14 @@ namespace ppbox
             }
 
             void update_buffer_time(
-                size_t buffer_time)
+                boost::uint32_t buffer_time)
             {
                 buffer_time_ = buffer_time;
             }
 
         private:
-            size_t buffer_time_;
-            time_t adv_expire_;
+            boost::uint32_t buffer_time_;
+            boost::uint32_t adv_expire_;
             char url_[1024];
         };
 
