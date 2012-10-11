@@ -20,7 +20,7 @@
 using namespace boost::system;
 
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("WorkerModule", 0);
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.WorkerModule", Debug);
 
 #define PEER_BUFFER_SIZE 45
 

@@ -19,7 +19,7 @@ using namespace framework::logger;
 #include <boost/asio/buffer.hpp>
 using namespace boost::system;
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("StatusProxy", 0)
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.StatusProxy", Debug)
 
 namespace ppbox
 {

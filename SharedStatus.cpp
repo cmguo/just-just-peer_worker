@@ -22,7 +22,7 @@ using namespace framework::logger;
 using namespace boost::interprocess;
 using namespace boost::system;
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("SharedStatus", 1)
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.SharedStatus", Debug)
 
 namespace ppbox
 {
