@@ -21,8 +21,6 @@
 #include <signal.h>
 #endif
 
-FRAMEWORK_LOGGER_DECLARE_MODULE("PeerWorker");
-
 namespace ppbox
 {
     namespace peer_worker
