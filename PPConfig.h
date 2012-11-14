@@ -4,8 +4,6 @@
 #include <framework/configure/Config.h>
 using namespace framework::configure;
 
-class util::daemon::Daemon;
-
 namespace ppbox
 {
     namespace peer_worker
