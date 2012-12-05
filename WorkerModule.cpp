@@ -106,8 +106,8 @@ namespace ppbox
         {
             STARTPARAM start_param;
 
-            boost::filesystem::path exe_dir = framework::filesystem::bin_file().remove_leaf();
-            std::string log_path = (exe_dir / "peer.log").file_string();
+            //boost::filesystem::path exe_dir = framework::filesystem::bin_file().remove_leaf();
+            //std::string log_path = (exe_dir / "peer.log").file_string();
             //freopen(log_path.c_str(), "w", stderr);
 #ifdef PPBOX_STATIC_BIND_PEER_LIB
             error_code ec;

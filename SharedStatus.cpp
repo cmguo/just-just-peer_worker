@@ -126,7 +126,7 @@ namespace ppbox
 		    std::cout<<"enum_process not found"<<std::endl;
 		    LOG_WARN("[get_memory_blocks] enum_process not found");
 		    ProcessInfo temp;
-		    temp.pid = getpid();
+		    temp.pid = framework::this_process::id();
 		    threads.push_back(temp);
 		    ec.clear();	
                     //return ec;
