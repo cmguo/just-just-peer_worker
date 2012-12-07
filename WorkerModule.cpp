@@ -7,7 +7,7 @@
 
 #include <ppbox/dac/DacInfoWorker.h>
 
-#include <peer/peer/Name.h>
+#include <p2p/peer/Name.h>
 
 #include <framework/process/Process.h>
 #include <framework/filesystem/Path.h>

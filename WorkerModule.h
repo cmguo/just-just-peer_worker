@@ -9,7 +9,7 @@
 
 #include <ppbox/common/PortManager.h>
 
-#include <peer/peer/Interface.h>
+#include <p2p/peer/Interface.h>
 
 #include <framework/library/Library.h>
 #include <framework/timer/TimeTraits.h>

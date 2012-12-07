@@ -211,7 +211,7 @@ namespace ppbox
                 }
             }
 
-            for(int i = 0; i < UINT8_MAX_VALUE; i++) {
+            for(boost::uint8_t i = 0; i < UINT8_MAX_VALUE; i++) {
                 if (si->P2PDownloaderRIDs[i].Data1 == 0) {
                     continue;
                 }
