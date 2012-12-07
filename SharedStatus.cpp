@@ -15,14 +15,13 @@
 using namespace framework::process;
 using namespace framework::string;
 using namespace framework::system;
-using namespace framework::logger;
 
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 using namespace boost::interprocess;
 using namespace boost::system;
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.SharedStatus", Debug)
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.SharedStatus", framework::logger::Debug)
 
 namespace ppbox
 {

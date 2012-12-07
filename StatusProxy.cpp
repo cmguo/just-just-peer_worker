@@ -13,13 +13,12 @@ using namespace util::protocol;
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
-using namespace framework::logger;
 
 #include <boost/asio/streambuf.hpp>
 #include <boost/asio/buffer.hpp>
 using namespace boost::system;
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.StatusProxy", Debug)
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.StatusProxy", framework::logger::Debug)
 
 namespace ppbox
 {
