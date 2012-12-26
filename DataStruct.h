@@ -16,16 +16,16 @@ typedef struct _UUID {
 
 typedef UUID RID;
 
-const boost::uint32_t BITMAP_SIZE = 50;
+const boost::uint16_t BITMAP_SIZE = 50;
 
-const boost::uint32_t UINT8_MAX_VALUE = 256;
+const boost::uint16_t UINT8_MAX_VALUE = 256;
 
-const boost::uint32_t LIVEDOWNLOADER_MAX_COUNT = 64;
+const boost::uint16_t LIVEDOWNLOADER_MAX_COUNT = 64;
 
-const boost::int32_t MAX_P2P_DOWNLOADER_COUNT = 100;
+const boost::uint16_t MAX_P2P_DOWNLOADER_COUNT = 100;
 
 
-const boost::uint32_t MAX_IP_COUNT = 10;
+const boost::uint16_t MAX_IP_COUNT = 10;
 
 //////////////////////////////////////////////////////////////////////////
 // 公共结构

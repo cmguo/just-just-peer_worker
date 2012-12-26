@@ -21,7 +21,7 @@ using namespace framework::system;
 using namespace boost::interprocess;
 using namespace boost::system;
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.SharedStatus", framework::logger::Debug)
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.SharedStatus", framework::logger::Info)
 
 namespace ppbox
 {
@@ -113,7 +113,7 @@ namespace ppbox
                 ProcessStat stat;
                 if (get_process_stat(cache_->pid, stat) 
                     || stat.state == ProcessStat::zombie) {
-                        LOG_WARN("[get_memory_blocks] old pid(" << cache_->pid << ") dead");
+                        LOG_DEBUG("[get_memory_blocks] old pid(" << cache_->pid << ") dead");
                         cache_->pid = 0;
                 }
             }
@@ -122,12 +122,11 @@ namespace ppbox
                 std::vector<ProcessInfo> threads;
                 error_code ec = enum_process(name_string(), threads);
                 if (ec || threads.empty()) {
-		    std::cout<<"enum_process not found"<<std::endl;
-		    LOG_WARN("[get_memory_blocks] enum_process not found");
-		    ProcessInfo temp;
-		    temp.pid = framework::this_process::id();
-		    threads.push_back(temp);
-		    ec.clear();	
+                    LOG_DEBUG("[get_memory_blocks] enum_process not found");
+                    ProcessInfo temp;
+                    temp.pid = framework::this_process::id();
+                    threads.push_back(temp);
+                    ec.clear();    
                     //return ec;
                 }
                 if (threads.empty()) {
@@ -148,7 +147,7 @@ namespace ppbox
                 }
             }
             if (cache_->pid == 0) {
-                LOG_WARN("[get_memory_blocks] pid not find");
+                LOG_DEBUG("[get_memory_blocks] pid not find");
                 return error::not_open;
             }
 
@@ -210,7 +209,7 @@ namespace ppbox
                 }
             }
 
-            for(boost::uint8_t i = 0; i < UINT8_MAX_VALUE; i++) {
+            for(int i = 0; i < UINT8_MAX_VALUE; i++) {
                 if (si->P2PDownloaderRIDs[i].Data1 == 0) {
                     continue;
                 }

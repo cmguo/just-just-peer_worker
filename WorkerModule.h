@@ -59,7 +59,7 @@ namespace ppbox
             boost::uint8_t buffer_size_;
         private:
             clock_timer timer_;
-#ifndef PPBOX_STATIC_BIND_PEER_LIB			
+#ifndef PPBOX_STATIC_BIND_PEER_LIB
             framework::library::Library lib_;
 #endif
             NETINTERFACE ipeer_;

@@ -47,7 +47,7 @@ namespace ppbox
                 if ((boost::uint32_t)time(NULL) >= adv_expire_)
                     return buffer_time_;
                 else
-                    return buffer_time_ + size_t(adv_expire_ - time(NULL));
+                    return buffer_time_ + size_t(adv_expire_ - time(NULL)) * 1000;
             }
 
         public:

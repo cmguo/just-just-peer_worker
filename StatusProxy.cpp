@@ -108,6 +108,10 @@ namespace ppbox
             virtual void transfer_response_data(
                 response_type const & resp)
             {
+                if (buffers_.empty()) {
+                    resp(error_code(), std::make_pair(size_t(0), size_t(0)));
+                    return;
+                }
                 boost::asio::async_write(get_client_data_stream(), buffers_, 
                     boost::bind(&StatusSession::handle_transfer_response_data, this, 
 #ifndef WINRT
