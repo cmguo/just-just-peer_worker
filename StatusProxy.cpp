@@ -16,9 +16,10 @@ using namespace util::protocol;
 
 #include <boost/asio/streambuf.hpp>
 #include <boost/asio/buffer.hpp>
+#include <boost/asio/write.hpp>
 using namespace boost::system;
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.StatusProxy", framework::logger::Debug)
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.StatusProxy", framework::logger::Warn)
 
 namespace ppbox
 {
@@ -135,7 +136,7 @@ namespace ppbox
             virtual void on_error(
                 boost::system::error_code const & ec)
             {
-                LOG_WARN("on_error " << ec.message());
+                LOG_DEBUG("[on_error] " << ec.message());
                 if (ec == boost::asio::error::address_in_use)
                     mgr_.module().get_daemon().post_stop();
             }

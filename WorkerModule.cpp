@@ -260,7 +260,7 @@ namespace ppbox
                 std::string current_url = stat->current_url();
                 size_t buffer_time = stat->buffer_time();
                 LOG_TRACE("client_status: " << " " << current_url << " " << buffer_time);
-                ipeer_.SetRestPlayTimeByUrl(current_url.c_str(), buffer_time / 1000);
+                ipeer_.SetRestPlayTimeByUrl(current_url.c_str(), buffer_time);
             }
         }
 
