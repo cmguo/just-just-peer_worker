@@ -57,7 +57,7 @@ namespace ppbox
             util::daemon::use_module<ppbox::peer_worker::WorkerModule>(my_daemon);
             util::daemon::use_module<ppbox::peer_worker::StatusProxy>(my_daemon);
 
-            my_daemon.start(framework::this_process::notify_wait);
+            my_daemon.start(framework::process::notify_wait);
 
             return 0;
         }
