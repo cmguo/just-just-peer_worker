@@ -115,8 +115,12 @@ namespace ppbox
 #else
             error_code ec = 
                 lib_.open(::peer::name_string());
-            if (ec)
+            if (ec) {
+				if (ec == boost::system::errc::no_such_file_or_directory) {
+					ec.clear();
+				}
                 return ec;
+			}
 
             typedef void (PEER_API * LPTS_XXXX)(LPNETINTERFACE );
             LPTS_XXXX ts = (LPTS_XXXX)lib_.symbol("TS_XXXX");
