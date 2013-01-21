@@ -71,6 +71,9 @@ namespace ppbox
                 timer_.expires_from_now(Duration::seconds(1));
                 timer_.async_wait(boost::bind(&WorkerModule::handle_timer, this, _1));
             }
+			if (ec == boost::system::errc::no_such_file_or_directory) {
+				ec.clear();
+			}
             return ec;
         }
 
@@ -116,9 +119,6 @@ namespace ppbox
             error_code ec = 
                 lib_.open(::peer::name_string());
             if (ec) {
-				if (ec == boost::system::errc::no_such_file_or_directory) {
-					ec.clear();
-				}
                 return ec;
 			}
 
@@ -264,7 +264,8 @@ namespace ppbox
                 std::string current_url = stat->current_url();
                 size_t buffer_time = stat->buffer_time();
                 LOG_TRACE("client_status: " << " " << current_url << " " << buffer_time);
-                ipeer_.SetRestPlayTimeByUrl(current_url.c_str(), buffer_time);
+				if (ipeer_.SetRestPlayTimeByUrl)
+					ipeer_.SetRestPlayTimeByUrl(current_url.c_str(), buffer_time);
             }
         }
 
