@@ -5,12 +5,12 @@
 #include "ppbox/peer_worker/SharedStatus.h"
 
 #include <util/protocol/http/HttpProxy.h>
-#include <util/protocol/http/HttpProxyManager.h>
 #include <util/serialization/stl/map.h>
 #include <util/archive/LittleEndianBinaryOArchive.h>
 #include <util/buffers/BuffersSize.h>
 using namespace util::protocol;
 
+#include <framework/network/TcpSocket.hpp>
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
 
@@ -29,14 +29,14 @@ namespace ppbox
         class StatusSession;
 
         class StatusProxy::ProxyManager
-            : public util::protocol::HttpProxyManager<StatusSession, ProxyManager>
+            : public framework::network::ServerManager<StatusSession, ProxyManager>
             , public SharedStatus
         {
         public:
             ProxyManager(
                 boost::asio::io_service & io_svc, 
                 StatusProxy & module)
-                : util::protocol::HttpProxyManager<StatusSession, ProxyManager>(io_svc)
+                : framework::network::ServerManager<StatusSession, ProxyManager>(io_svc)
                 , module_(module)
             {
             }
