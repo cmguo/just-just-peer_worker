@@ -115,7 +115,7 @@ namespace ppbox
                 }
                 boost::asio::async_write(get_client_data_stream(), buffers_, 
                     boost::bind(&StatusSession::handle_transfer_response_data, this, 
-#ifndef WINRT
+#if (!defined WINRT) && (!defined WIN_PHONE)
                         resp, _1, boost::bind(std::make_pair<size_t, size_t>, _2, _2)));
 #else
                         resp, _1, boost::bind(std::make_pair<size_t &, size_t &>, _2, _2)));
