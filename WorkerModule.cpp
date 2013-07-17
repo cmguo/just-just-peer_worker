@@ -49,7 +49,6 @@ namespace ppbox
             g_workerModule = this;
             daemon.config().register_module("WorkerModule")
                  << CONFIG_PARAM_NAME_RDWR("buffer_size", buffer_size_);
-            std::cout<<"WorkerModule buffer_size:"<<(boost::uint32_t)buffer_size_<<std::endl;
             memset(&ipeer_, 0, sizeof(ipeer_));
             daemon.config().register_module("vod_proxy")
                 (MaxPeerConnection_,new MaxPeerConnection(*this))
@@ -217,7 +216,7 @@ namespace ppbox
 
             // start up
             if (ipeer_.Startup != NULL) {
-                ipeer_.Startup(&start_param);
+                port_ = ipeer_.Startup(&start_param);
             }
 
             portMgr_.set_port(ppbox::common::vod,port_);
