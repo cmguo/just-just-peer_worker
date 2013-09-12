@@ -151,7 +151,7 @@ namespace ppbox
         StatusProxy::StatusProxy(
             util::daemon::Daemon & daemon)
             : util::daemon::ModuleBase<StatusProxy>(daemon, "StatusProxy")
-            , addr_("(v4)0.0.0.0:1802")
+            , addr_("(v4)0.0.0.0:1802+")
         {
             config().register_module("StatusProxy")
                 << CONFIG_PARAM_NAME_NOACC("addr", addr_);
