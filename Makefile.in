@@ -38,7 +38,7 @@ PROJECT_COMMON_HEADERS  	:=
 
 ## 额外包含目录（多个，相对于包含根目录ROOT_INCLUDE_DIRECTORY）
 
-PROJECT_EXTERNAL_INCLUDES	:= base p2p
+PROJECT_EXTERNAL_INCLUDES	:=
 
 ## 该项目特点的编译选项
 
@@ -53,6 +53,7 @@ PROJECT_LINK_FLAGS		:=
 PROJECT_DEPENDS			:= \
 				/ppbox/dac \
 				/ppbox/common \
+				/p2p/peer/peer \
 				$(PROJECT_DEPENDS) \
 
 ## 该项目特定的引用库
