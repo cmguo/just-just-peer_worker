@@ -2,7 +2,6 @@
 
 #include "ppbox/peer_worker/Common.h"
 #include "ppbox/peer_worker/WorkerModule.h"
-#include "ppbox/peer_worker/PPConfig.h"
 #include "ppbox/peer_worker/ClientStatus.h"
 
 #include <ppbox/dac/DacInfoWorker.h>
@@ -48,15 +47,9 @@ namespace ppbox
         {
             g_workerModule = this;
             daemon.config().register_module("WorkerModule")
-                 << CONFIG_PARAM_NAME_RDWR("buffer_size", buffer_size_);
+                 << CONFIG_PARAM_NAME_RDWR("buffer_size", buffer_size_)
+                 << CONFIG_PARAM_NAME_RDWR("port", port_);
             memset(&ipeer_, 0, sizeof(ipeer_));
-            daemon.config().register_module("vod_proxy")
-                (MaxPeerConnection_,new MaxPeerConnection(*this))
-                (MaxBufferMemory_,new MaxBufferMemory(*this))
-                (PreAllocSubPieceCount_,new PreAllocSubPieceCount(*this))
-                (EnableUdpChecksum_,new EnableUdpChecksum(*this))
-                (MaxPeerTunnel_,new MaxPeerTunnel(*this))
-                (MaxPeerConnectorCount_,new MaxPeerConnectorCount(*this));
         }
 
         WorkerModule::~WorkerModule()
