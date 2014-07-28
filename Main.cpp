@@ -26,46 +26,50 @@ namespace ppbox
     namespace peer_worker
     {
 
-        int vod_main(int argc, char * argv[])
+        void register_module(util::daemon::Daemon & daemon)
         {
-            util::daemon::Daemon my_daemon("peer_worker.conf");
-            char const * default_argv[] = {
-                "++framework::logger::Stream.0.file=$LOG/peer_worker.log", 
-                "++framework::logger::Stream.0.append=true", 
-                "++framework::logger::Stream.0.roll=true", 
-                "++framework::logger::Stream.0.level=5", 
-                "++framework::logger::Stream.0.size=102400", 
-            };
-            my_daemon.parse_cmdline(sizeof(default_argv) / sizeof(default_argv[0]), default_argv);
-            my_daemon.parse_cmdline(argc, (char const **)argv);
-
-            framework::process::SignalHandler sig_handler(
-                framework::process::Signal::sig_int, 
-                boost::bind(&util::daemon::Daemon::post_stop, &my_daemon), true);
-
-            framework::logger::load_config(my_daemon.config());
-
-            ppbox::common::log_versions();
-
-            ppbox::common::CommonModule & common = 
-                util::daemon::use_module<ppbox::common::CommonModule>(my_daemon, "VodWorker");
-            common.set_version(ppbox::peer_worker::version());
-
-            //util::daemon::use_module<ppbox::common::ConfigMgr>(my_daemon);
-            util::daemon::use_module<ppbox::common::Debuger>(my_daemon);
-            util::daemon::use_module<ppbox::common::PortManager>(my_daemon);
-            util::daemon::use_module<ppbox::peer_worker::WorkerModule>(my_daemon);
-            util::daemon::use_module<ppbox::peer_worker::StatusProxy>(my_daemon);
-
-            my_daemon.start(framework::process::notify_wait);
-
-            return 0;
+            //util::daemon::use_module<ppbox::common::ConfigMgr>(daemon);
+            util::daemon::use_module<ppbox::common::Debuger>(daemon);
+            util::daemon::use_module<ppbox::common::PortManager>(daemon);
+            util::daemon::use_module<ppbox::peer_worker::WorkerModule>(daemon);
+            util::daemon::use_module<ppbox::peer_worker::StatusProxy>(daemon);
         }
+
     }
 }
+
 #ifndef _LIB
+
 int main(int argc, char * argv[])
 {
-    return ppbox::peer_worker::vod_main(argc,argv);
+    util::daemon::Daemon my_daemon("peer_worker.conf");
+    char const * default_argv[] = {
+        "++framework::logger::Stream.0.file=$LOG/peer_worker.log", 
+        "++framework::logger::Stream.0.append=true", 
+        "++framework::logger::Stream.0.roll=true", 
+        "++framework::logger::Stream.0.level=5", 
+        "++framework::logger::Stream.0.size=102400", 
+    };
+    my_daemon.parse_cmdline(sizeof(default_argv) / sizeof(default_argv[0]), default_argv);
+    my_daemon.parse_cmdline(argc, (char const **)argv);
+
+    framework::process::SignalHandler sig_handler(
+        framework::process::Signal::sig_int, 
+        boost::bind(&util::daemon::Daemon::post_stop, &my_daemon), true);
+
+    framework::logger::load_config(my_daemon.config());
+
+    ppbox::common::log_versions();
+
+    ppbox::common::CommonModule & common = 
+        util::daemon::use_module<ppbox::common::CommonModule>(my_daemon, "VodWorker");
+    common.set_version(ppbox::peer_worker::version());
+
+    ppbox::peer_worker::register_module(my_daemon);
+
+    my_daemon.start(framework::process::notify_wait);
+
+    return 0;
 }
+
 #endif
