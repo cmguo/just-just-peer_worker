@@ -1,9 +1,9 @@
 // SharedStatus.h
 
-#ifndef _PPBOX_PEER_WORKER_SHARED_STATUS_H_
-#define _PPBOX_PEER_WORKER_SHARED_STATUS_H_
+#ifndef _JUST_PEER_WORKER_SHARED_STATUS_H_
+#define _JUST_PEER_WORKER_SHARED_STATUS_H_
 
-namespace ppbox
+namespace just
 {
     namespace peer_worker
     {
@@ -37,6 +37,6 @@ namespace ppbox
         };
 
     } // namespace peer_worker
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_peer_worker_SHARED_STATUS_H_
+#endif // _JUST_peer_worker_SHARED_STATUS_H_

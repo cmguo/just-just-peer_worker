@@ -1,12 +1,12 @@
 // Version.h
 
-#ifndef _PPBOX_PEER_WORKER_VERSION_H_
-#define _PPBOX_PEER_WORKER_VERSION_H_
+#ifndef _JUST_PEER_WORKER_VERSION_H_
+#define _JUST_PEER_WORKER_VERSION_H_
 
-#include "ppbox/peer_worker/Define.h"
+#include "just/peer_worker/Define.h"
 
 #include <framework/system/AutoVersion.h>
 
-#include <ppbox/common/Version.h>
+#include <just/common/Version.h>
 
-#endif // _PPBOX_VOD_WORKER_VERSION_H_
+#endif // _JUST_VOD_WORKER_VERSION_H_

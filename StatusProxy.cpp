@@ -1,8 +1,8 @@
 // StatusProxy.cpp
 
-#include "ppbox/peer_worker/Common.h"
-#include "ppbox/peer_worker/StatusProxy.h"
-#include "ppbox/peer_worker/SharedStatus.h"
+#include "just/peer_worker/Common.h"
+#include "just/peer_worker/StatusProxy.h"
+#include "just/peer_worker/SharedStatus.h"
 
 #include <util/protocol/http/HttpProxy.h>
 #include <util/serialization/stl/map.h>
@@ -19,9 +19,9 @@ using namespace util::protocol;
 #include <boost/asio/write.hpp>
 using namespace boost::system;
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.StatusProxy", framework::logger::Warn)
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.peer_worker.StatusProxy", framework::logger::Warn)
 
-namespace ppbox
+namespace just
 {
     namespace peer_worker
     {
@@ -177,4 +177,4 @@ namespace ppbox
         }
 
     } // namespace peer_worker
-} // namespace ppbox
+} // namespace just

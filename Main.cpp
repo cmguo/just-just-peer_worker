@@ -1,14 +1,14 @@
 // Main.cpp
 
-#include "ppbox/peer_worker/Common.h"
-#include "ppbox/peer_worker/Version.h"
-#include "ppbox/peer_worker/WorkerModule.h"
-#include "ppbox/peer_worker/StatusProxy.h"
-#include "ppbox/peer_worker/Interface.h"
+#include "just/peer_worker/Common.h"
+#include "just/peer_worker/Version.h"
+#include "just/peer_worker/WorkerModule.h"
+#include "just/peer_worker/StatusProxy.h"
+#include "just/peer_worker/Interface.h"
 
-//#include <ppbox/common/ConfigMgr.h>
-#include <ppbox/common/Debuger.h>
-#include <ppbox/common/PortManager.h>
+//#include <just/common/ConfigMgr.h>
+#include <just/common/Debuger.h>
+#include <just/common/PortManager.h>
 
 #include <framework/logger/Logger.h>
 #include <framework/process/Process.h>
@@ -21,18 +21,18 @@
 #include <signal.h>
 #endif
 
-namespace ppbox
+namespace just
 {
     namespace peer_worker
     {
 
         void register_module(util::daemon::Daemon & daemon)
         {
-            //util::daemon::use_module<ppbox::common::ConfigMgr>(daemon);
-            util::daemon::use_module<ppbox::common::Debuger>(daemon);
-            util::daemon::use_module<ppbox::common::PortManager>(daemon);
-            util::daemon::use_module<ppbox::peer_worker::WorkerModule>(daemon);
-            util::daemon::use_module<ppbox::peer_worker::StatusProxy>(daemon);
+            //util::daemon::use_module<just::common::ConfigMgr>(daemon);
+            util::daemon::use_module<just::common::Debuger>(daemon);
+            util::daemon::use_module<just::common::PortManager>(daemon);
+            util::daemon::use_module<just::peer_worker::WorkerModule>(daemon);
+            util::daemon::use_module<just::peer_worker::StatusProxy>(daemon);
         }
 
     }
@@ -59,13 +59,13 @@ int main(int argc, char * argv[])
 
     framework::logger::load_config(my_daemon.config());
 
-    ppbox::common::log_versions();
+    just::common::log_versions();
 
-    ppbox::common::CommonModule & common = 
-        util::daemon::use_module<ppbox::common::CommonModule>(my_daemon, "VodWorker");
-    common.set_version(ppbox::peer_worker::version());
+    just::common::CommonModule & common = 
+        util::daemon::use_module<just::common::CommonModule>(my_daemon, "VodWorker");
+    common.set_version(just::peer_worker::version());
 
-    ppbox::peer_worker::register_module(my_daemon);
+    just::peer_worker::register_module(my_daemon);
 
     my_daemon.start(framework::process::notify_wait);
 

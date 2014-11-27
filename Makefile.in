@@ -14,7 +14,7 @@ PROJECT_TARGET			:= peer_worker
 
 PROJECT_VERSION			:=
 
-PROJECT_VERSION_HEADER		:= ppbox/peer_worker/Define.h
+PROJECT_VERSION_HEADER		:= just/peer_worker/Define.h
 
 ## 指定源文件目录（该项目源文件的总目录，相对于源文件根目录ROOT_SOURCE_DIRECTORY，默认为LOCAL_NAME）
 
@@ -51,8 +51,8 @@ PROJECT_LINK_FLAGS		:=
 ## 该项目依赖的其他项目
 
 PROJECT_DEPENDS			:= \
-				/ppbox/dac \
-				/ppbox/common \
+				/just/dac \
+				/just/common \
 				/p2p/peer/peer \
 				$(PROJECT_DEPENDS) \
 

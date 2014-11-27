@@ -1,7 +1,7 @@
 #ifndef __INTERFACE_PEER_WORKER_H__
 #define __INTERFACE_PEER_WORKER_H__
 
-namespace ppbox
+namespace just
 {
     namespace peer_worker
     {

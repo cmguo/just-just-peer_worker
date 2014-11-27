@@ -1,10 +1,10 @@
 // WorkerModule.cpp
 
-#include "ppbox/peer_worker/Common.h"
-#include "ppbox/peer_worker/WorkerModule.h"
-#include "ppbox/peer_worker/ClientStatus.h"
+#include "just/peer_worker/Common.h"
+#include "just/peer_worker/WorkerModule.h"
+#include "just/peer_worker/ClientStatus.h"
 
-#include <ppbox/dac/DacInfoWorker.h>
+#include <just/dac/DacInfoWorker.h>
 
 #include <peer/Name.h>
 
@@ -19,28 +19,28 @@
 using namespace boost::system;
 
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.WorkerModule", framework::logger::Debug);
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.peer_worker.WorkerModule", framework::logger::Debug);
 
 #define PEER_BUFFER_SIZE 45
 
-static ppbox::peer_worker::WorkerModule* g_workerModule = NULL;
+static just::peer_worker::WorkerModule* g_workerModule = NULL;
 static void SubmitStopLog(std::string dac)
 {
     g_workerModule->SubmitPeerLog(dac);
 }
 
-namespace ppbox
+namespace just
 {
     namespace peer_worker
     {
 
         WorkerModule::WorkerModule(
             util::daemon::Daemon & daemon)
-            : ppbox::common::CommonModuleBase<WorkerModule>(daemon, "WorkerModule")
-#ifndef PPBOX_DISABLE_DAC
-            , dac_(util::daemon::use_module<ppbox::dac::DacModule>(daemon))
+            : just::common::CommonModuleBase<WorkerModule>(daemon, "WorkerModule")
+#ifndef JUST_DISABLE_DAC
+            , dac_(util::daemon::use_module<just::dac::DacModule>(daemon))
 #endif
-            , portMgr_(util::daemon::use_module<ppbox::common::PortManager>(daemon))
+            , portMgr_(util::daemon::use_module<just::common::PortManager>(daemon))
             , port_(9000)
             , buffer_size_(PEER_BUFFER_SIZE)
             , timer_(io_svc())
@@ -72,8 +72,8 @@ namespace ppbox
         void WorkerModule::SubmitPeerLog(
             std::string const & msg)
         {
-#ifndef PPBOX_DISABLE_DAC
-            dac_.submit(ppbox::dac::DacPeerStatInfo(msg));
+#ifndef JUST_DISABLE_DAC
+            dac_.submit(just::dac::DacPeerStatInfo(msg));
 #endif
         }
 
@@ -91,7 +91,7 @@ namespace ppbox
                 return;
             timer_.expires_from_now(Duration::seconds(1));
             timer_.async_wait(boost::bind(&WorkerModule::handle_timer, this, _1));
-#ifndef PPBOX_CONTAIN_PEER_WORKER
+#ifndef JUST_CONTAIN_PEER_WORKER
             check_process();
 #endif            
             update_stat();
@@ -104,7 +104,7 @@ namespace ppbox
             //boost::filesystem::path exe_dir = framework::filesystem::bin_file().remove_leaf();
             //std::string log_path = (exe_dir / "peer.log").file_string();
             //freopen(log_path.c_str(), "w", stderr);
-#ifdef PPBOX_STATIC_BIND_PEER_LIB
+#ifdef JUST_STATIC_BIND_PEER_LIB
             error_code ec;
             TS_XXXX(&ipeer_);
 #else
@@ -212,7 +212,7 @@ namespace ppbox
                 port_ = ipeer_.Startup(&start_param);
             }
 
-            portMgr_.set_port(ppbox::common::vod,port_);
+            portMgr_.set_port(just::common::vod,port_);
 
             return ec;
         }
@@ -225,14 +225,14 @@ namespace ppbox
                 ipeer_.Cleanup();
                 LOG_DEBUG("[stop_peer] end");
             }
-#ifndef PPBOX_STATIC_BIND_PEER_LIB
+#ifndef JUST_STATIC_BIND_PEER_LIB
             lib_.close();
 #endif
         }
 
         void WorkerModule::check_process()
         {
-#ifndef PPBOX_CONTAIN_PEER_WORKER
+#ifndef JUST_CONTAIN_PEER_WORKER
 #ifdef __APPLE__
             int id = framework::this_process::parent_id();
             if(1 == id)
@@ -246,12 +246,12 @@ namespace ppbox
 
         void WorkerModule::update_stat()
         {
-            framework::container::List<ppbox::peer_worker::ClientStatus> * stats = 
-                (framework::container::List<ppbox::peer_worker::ClientStatus> *)shared_memory().get_by_id(SHARED_OBJECT_ID_DEMUX);
+            framework::container::List<just::peer_worker::ClientStatus> * stats = 
+                (framework::container::List<just::peer_worker::ClientStatus> *)shared_memory().get_by_id(SHARED_OBJECT_ID_DEMUX);
             if (!stats)
                 return;
 
-            ppbox::peer_worker::ClientStatus::pointer stat;
+            just::peer_worker::ClientStatus::pointer stat;
             for (stat = stats->first(); &*stat; stat = stats->next(stat)) {
                 std::string current_url = stat->current_url();
                 size_t buffer_time = stat->buffer_time();
@@ -262,4 +262,4 @@ namespace ppbox
         }
 
     } // namespace peer_worker
-} // namespace ppbox
+} // namespace just

@@ -1,7 +1,7 @@
 // DataStruct.h
 
-#ifndef _PPBOX_AGENT_DATA_STRUCT_H_
-#define _PPBOX_AGENT_DATA_STRUCT_H_
+#ifndef _JUST_AGENT_DATA_STRUCT_H_
+#define _JUST_AGENT_DATA_STRUCT_H_
 
 #pragma pack(push, 1)
 
@@ -601,4 +601,4 @@ struct UPLOAD_INFO
 
 #pragma pack(pop)
 
-#endif // _PPBOX_AGENT_DATA_STRUCT_H_
+#endif // _JUST_AGENT_DATA_STRUCT_H_

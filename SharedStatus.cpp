@@ -1,9 +1,9 @@
 // SharedStatus.cpp
 
-#include "ppbox/peer_worker/Common.h"
-#include "ppbox/peer_worker/SharedStatus.h"
-#include "ppbox/peer_worker/DataStruct.h"
-#include "ppbox/peer_worker/Name.h"
+#include "just/peer_worker/Common.h"
+#include "just/peer_worker/SharedStatus.h"
+#include "just/peer_worker/DataStruct.h"
+#include "just/peer_worker/Name.h"
 
 #include <framework/process/Process.h>
 #include <framework/process/Error.h>
@@ -21,9 +21,9 @@ using namespace framework::system;
 using namespace boost::interprocess;
 using namespace boost::system;
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.peer_worker.SharedStatus", framework::logger::Info)
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.peer_worker.SharedStatus", framework::logger::Info)
 
-namespace ppbox
+namespace just
 {
     namespace peer_worker
     {
@@ -269,5 +269,5 @@ namespace ppbox
         }
 
     } // namespace peer_worker
-} // namespace ppbox
+} // namespace just
 
