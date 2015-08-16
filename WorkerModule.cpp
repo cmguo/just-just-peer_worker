@@ -56,9 +56,10 @@ namespace just
         {
         }
 
-        error_code WorkerModule::startup()
+        bool WorkerModule::startup(
+            error_code & ec)
         {
-            error_code ec = start_peer();
+            ec = start_peer();
             if (!ec) {
                 timer_.expires_from_now(Duration::seconds(1));
                 timer_.async_wait(boost::bind(&WorkerModule::handle_timer, this, _1));
@@ -66,7 +67,7 @@ namespace just
             if (ec == boost::system::errc::no_such_file_or_directory) {
                 ec.clear();
             }
-            return ec;
+            return !ec;
         }
 
         void WorkerModule::SubmitPeerLog(
@@ -77,11 +78,12 @@ namespace just
 #endif
         }
 
-        void WorkerModule::shutdown()
+        bool WorkerModule::shutdown()
+            error_code & ec)
         {
-            boost::system::error_code ec;
             timer_.cancel(ec);
             stop_peer();
+            return !ec;
         }
 
         void WorkerModule::handle_timer(
