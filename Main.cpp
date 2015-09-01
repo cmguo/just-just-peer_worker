@@ -67,7 +67,8 @@ int main(int argc, char * argv[])
 
     just::peer_worker::register_module(my_daemon);
 
-    my_daemon.start(framework::process::notify_wait);
+    boost::system::error_code ec;
+    my_daemon.start(framework::process::notify_wait, ec);
 
     return 0;
 }

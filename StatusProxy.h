@@ -20,9 +20,11 @@ namespace just
             ~StatusProxy();
 
         private:
-            virtual boost::system::error_code startup();
+            virtual bool startup(
+                boost::system::error_code & ec);
 
-            virtual void shutdown();
+            virtual bool shutdown(
+                boost::system::error_code & ec);
 
         private:
             class ProxyManager;

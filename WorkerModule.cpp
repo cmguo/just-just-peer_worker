@@ -13,6 +13,7 @@
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
 #include <framework/system/LogicError.h>
+using namespace framework::timer;
 
 #include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
@@ -78,7 +79,7 @@ namespace just
 #endif
         }
 
-        bool WorkerModule::shutdown()
+        bool WorkerModule::shutdown(
             error_code & ec)
         {
             timer_.cancel(ec);
@@ -104,7 +105,7 @@ namespace just
             STARTPARAM start_param;
 
             //boost::filesystem::path exe_dir = framework::filesystem::bin_file().remove_leaf();
-            //std::string log_path = (exe_dir / "peer.log").file_string();
+            //std::string log_path = (exe_dir / "peer.log").string();
             //freopen(log_path.c_str(), "w", stderr);
 #ifdef JUST_STATIC_BIND_PEER_LIB
             error_code ec;
@@ -173,7 +174,7 @@ namespace just
             if (0)
             {
                 boost::filesystem::create_directories(ph_root / "data");
-                std::string data_dir = (ph_root / "data").file_string();
+                std::string data_dir = (ph_root / "data").string();
                 size_t max_length = sizeof(start_param.szDiskPath) - 1;
                 if (data_dir.length() >= max_length) {
                     LOG_INFO("data directory size too large, size = " << data_dir.length() << ", max = " << max_length);
@@ -185,7 +186,7 @@ namespace just
 
             {
                 boost::filesystem::create_directories(ph_root / "config");
-                std::string config_dir = (ph_root / "config").file_string();
+                std::string config_dir = (ph_root / "config").string();
                 size_t max_length = sizeof(start_param.szConfigPath) - 1;
                 if (config_dir.length() >= max_length) {
                     LOG_INFO("config directory size too large, size = " << config_dir.length() << ", max = " << max_length);

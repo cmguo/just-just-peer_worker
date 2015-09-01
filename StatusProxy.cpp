@@ -163,17 +163,19 @@ namespace just
             delete mgr_;
         }
 
-        error_code StatusProxy::startup()
+        bool StatusProxy::startup(
+            error_code & ec)
         {
-            error_code ec;
             mgr_->start(addr_, ec);
             ec.clear();
-            return ec;
+            return !ec;
         }
 
-        void StatusProxy::shutdown()
+        bool StatusProxy::shutdown(
+            error_code & ec)
         {
-            mgr_->stop();
+            mgr_->stop(ec);
+            return true;
         }
 
     } // namespace peer_worker
