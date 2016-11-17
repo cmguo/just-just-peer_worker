@@ -137,7 +137,7 @@ namespace just
             start_param.aIndexServer[0].szIndexDomain[0] = '\0';
             start_param.bUseDisk = 1;
             start_param.usTcpPort = 0;
-            start_param.submit_stop_log = SubmitStopLog;
+            //start_param.submit_stop_log = SubmitStopLog;
             start_param.bHttpProxyEnabled = 1;
             start_param.bReadOnly = 0;
             start_param.memory_pool_size_in_MB = buffer_size_;
