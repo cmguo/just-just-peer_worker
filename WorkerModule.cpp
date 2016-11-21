@@ -25,7 +25,7 @@ FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.peer_worker.WorkerModule", framework
 #define PEER_BUFFER_SIZE 45
 
 static just::peer_worker::WorkerModule* g_workerModule = NULL;
-static void SubmitStopLog(std::string dac)
+static void SubmitStopLog(boost::uint32_t n, std::string const & dac)
 {
     g_workerModule->SubmitPeerLog(dac);
 }
@@ -137,7 +137,7 @@ namespace just
             start_param.aIndexServer[0].szIndexDomain[0] = '\0';
             start_param.bUseDisk = 1;
             start_param.usTcpPort = 0;
-            start_param.submit_stop_log = SubmitStopLog;
+            start_param.submit_log = SubmitStopLog;
             start_param.bHttpProxyEnabled = 1;
             start_param.bReadOnly = 0;
             start_param.memory_pool_size_in_MB = buffer_size_;
