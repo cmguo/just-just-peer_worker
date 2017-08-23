@@ -45,11 +45,17 @@ namespace just
             , port_(9000)
             , buffer_size_(PEER_BUFFER_SIZE)
             , timer_(io_svc())
+            , libName_(::peer::name_string())
+            , libToogle_(true)
+            , sym_name_("TS_XXXX")
         {
             g_workerModule = this;
             daemon.config().register_module("WorkerModule")
                  << CONFIG_PARAM_NAME_RDWR("buffer_size", buffer_size_)
-                 << CONFIG_PARAM_NAME_RDWR("port", port_);
+                 << CONFIG_PARAM_NAME_RDWR("port", port_)
+                 << CONFIG_PARAM_NAME_RDWR("lib_name", libName_)
+                 << CONFIG_PARAM_NAME_RDWR("lib_toogle", libToogle_)
+                 << CONFIG_PARAM_NAME_RDWR("sym_name", sym_name_);
             memset(&ipeer_, 0, sizeof(ipeer_));
         }
 
@@ -111,23 +117,25 @@ namespace just
             error_code ec;
             TS_XXXX(&ipeer_);
 #else
-            error_code ec = 
-                lib_.open(::peer::name_string());
-            if (ec) {
-                return ec;
-            }
+        error_code ec = lib_.open(libName_);
+        if (ec) {
+            LOG_ERROR("[start_peer] open " << libName_ << ", failed, " << ec.message());
+            return ec;
+        }
 
-            typedef void (PEER_API * LPTS_XXXX)(LPNETINTERFACE );
-            LPTS_XXXX ts = (LPTS_XXXX)lib_.symbol("TS_XXXX");
-            if (ts) {
-                ts(&ipeer_);
-            } else {
-                LOG_WARN("find symbol TS_XXXX failed");
-                return framework::system::logic_error::failed_some;
-            }
+        typedef void (PEER_API * LPTS_XXXX)(LPNETINTERFACE );
+        LPTS_XXXX ts = (LPTS_XXXX)lib_.symbol(sym_name_);
+        if (ts) {
+            ts(&ipeer_);
+            LOG_DEBUG("[start_peer] find symbol " << sym_name_);
+        } else {
+            LOG_ERROR("Failed to find symbol: " << sym_name_ << ", libName " << libName_);
+            return framework::system::logic_error::failed_some;
+        }
 #endif
             // start param
             //memset(&start_param, 0, sizeof(start_param));
+        if (!libToogle_) {
             start_param.szDiskPath[0] = '\0';
             start_param.szConfigPath[0] = '\0';
             start_param.szPeerGuid[0] = '\0';
@@ -214,7 +222,11 @@ namespace just
             if (ipeer_.Startup != NULL) {
                 port_ = ipeer_.Startup(&start_param);
             }
-
+        }
+        else
+        {
+            LOG_INFO("[use peer exported from ppbox]");
+        }
             portMgr_.set_port(just::common::vod,port_);
 
             return ec;
@@ -222,12 +234,15 @@ namespace just
 
         void WorkerModule::stop_peer()
         {
-            if (ipeer_.Cleanup != NULL) {
-                // peer Startup had execute Clearup already
-                LOG_DEBUG("[stop_peer] beg");
-                ipeer_.Cleanup();
-                LOG_DEBUG("[stop_peer] end");
+            if (!libToogle_) {
+                if (ipeer_.Cleanup != NULL) {
+                    // peer Startup had execute Clearup already
+                    LOG_DEBUG("[stop_peer] beg");
+                    ipeer_.Cleanup();
+                    LOG_DEBUG("[stop_peer] end");
+                }
             }
+
 #ifndef JUST_STATIC_BIND_PEER_LIB
             lib_.close();
 #endif
@@ -251,16 +266,19 @@ namespace just
         {
             framework::container::List<just::peer_worker::ClientStatus> * stats = 
                 (framework::container::List<just::peer_worker::ClientStatus> *)shared_memory().get_by_id(SHARED_OBJECT_ID_DEMUX);
-            if (!stats)
+            if (!stats) {
+                LOG_ERROR("[update_stat] could not get ClientStatus");
                 return;
+            }
 
             just::peer_worker::ClientStatus::pointer stat;
             for (stat = stats->first(); &*stat; stat = stats->next(stat)) {
                 std::string current_url = stat->current_url();
                 size_t buffer_time = stat->buffer_time();
                 LOG_TRACE("client_status: " << " " << current_url << " " << buffer_time);
-                if (ipeer_.SetRestPlayTimeByUrl)
+                if (ipeer_.SetRestPlayTimeByUrl){
                     ipeer_.SetRestPlayTimeByUrl(current_url.c_str(), buffer_time);
+                }
             }
         }
 

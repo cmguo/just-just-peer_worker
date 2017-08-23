@@ -58,6 +58,9 @@ namespace just
             just::common::PortManager& portMgr_;
             boost::uint16_t port_;
             boost::uint8_t buffer_size_;
+            std::string libName_;
+            bool libToogle_;
+            std::string sym_name_;
         private:
             clock_timer timer_;
 #ifndef JUST_STATIC_BIND_PEER_LIB
