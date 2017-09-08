@@ -46,7 +46,7 @@ namespace just
             , buffer_size_(PEER_BUFFER_SIZE)
             , timer_(io_svc())
             , libName_(::peer::name_string())
-            , libToogle_(true)
+            , libToogle_(false)
             , sym_name_("TS_XXXX")
         {
             g_workerModule = this;
