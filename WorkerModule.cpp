@@ -45,17 +45,24 @@ namespace just
             , port_(9000)
             , buffer_size_(PEER_BUFFER_SIZE)
             , timer_(io_svc())
-            , libName_(::peer::name_string())
-            , libToogle_(false)
+            , needStartPeer_(false)
+        #ifndef JUST_STATIC_BIND_PEER_LIB
+            , needLoadPeer_(false)
+            , peerLibName_("")
             , sym_name_("TS_XXXX")
+        #endif
         {
             g_workerModule = this;
             daemon.config().register_module("WorkerModule")
-                 << CONFIG_PARAM_NAME_RDWR("buffer_size", buffer_size_)
-                 << CONFIG_PARAM_NAME_RDWR("port", port_)
-                 << CONFIG_PARAM_NAME_RDWR("lib_name", libName_)
-                 << CONFIG_PARAM_NAME_RDWR("lib_toogle", libToogle_)
-                 << CONFIG_PARAM_NAME_RDWR("sym_name", sym_name_);
+            #ifndef JUST_STATIC_BIND_PEER_LIB
+                << CONFIG_PARAM_NAME_RDWR("peer_lib_name", peerLibName_)
+                << CONFIG_PARAM_NAME_RDWR("need_load_peer", needLoadPeer_)
+                << CONFIG_PARAM_NAME_RDWR("sym_name", sym_name_)
+            #endif
+                << CONFIG_PARAM_NAME_RDWR("need_start_peer", needStartPeer_)
+                << CONFIG_PARAM_NAME_RDWR("buffer_size", buffer_size_)
+                << CONFIG_PARAM_NAME_RDWR("port", port_);
+            LOG_DEBUG("[WorkerModule] port " << port_);
             memset(&ipeer_, 0, sizeof(ipeer_));
         }
 
@@ -66,15 +73,16 @@ namespace just
         bool WorkerModule::startup(
             error_code & ec)
         {
-            ec = start_peer();
-            if (!ec) {
+            if (!prepare_interface()){
+                LOG_ERROR("[startup] prepare_interface failed");
+                return false;
+            }
+            bool ret = start_peer();
+            if (ret) {
                 timer_.expires_from_now(Duration::seconds(1));
                 timer_.async_wait(boost::bind(&WorkerModule::handle_timer, this, _1));
             }
-            if (ec == boost::system::errc::no_such_file_or_directory) {
-                ec.clear();
-            }
-            return !ec;
+            return ret;
         }
 
         void WorkerModule::SubmitPeerLog(
@@ -106,36 +114,51 @@ namespace just
             update_stat();
         }
 
-        error_code WorkerModule::start_peer()
+        bool WorkerModule::prepare_interface()
         {
-            STARTPARAM start_param;
-
-            //boost::filesystem::path exe_dir = framework::filesystem::bin_file().remove_leaf();
-            //std::string log_path = (exe_dir / "peer.log").string();
-            //freopen(log_path.c_str(), "w", stderr);
-#ifdef JUST_STATIC_BIND_PEER_LIB
-            error_code ec;
+        #ifdef JUST_STATIC_BIND_PEER_LIB
             TS_XXXX(&ipeer_);
-#else
-        error_code ec = lib_.open(libName_);
-        if (ec) {
-            LOG_ERROR("[start_peer] open " << libName_ << ", failed, " << ec.message());
-            return ec;
+            return true;
+        #else
+            if (!needLoadPeer_){
+                return true;
+            }
+
+            if (needLoadPeer_ && peerLibName_.empty()){
+                LOG_ERROR("[prepare_interface] shouldLoadPeer_ is true, but peerLibName_ is empty");
+                return false;
+            }
+            error_code ec = lib_.open(peerLibName_);
+            if (ec){
+                LOG_ERROR("[prepare_interface] open " << peerLibName_ << ", failed, " << ec.message());
+                return ec;
+            }
+
+            typedef void (PEER_API *LPTS_XXXX)(LPNETINTERFACE );
+            LPTS_XXXX ts = (LPTS_XXXX)lib_.symbol(sym_name_);
+            if (ts){
+                ts(&ipeer_);
+                LOG_DEBUG("[prepare_interface] find symbol " << sym_name_);
+            } else {
+                LOG_ERROR("[prepare_interface]Failed to find symbol: " << sym_name_ << ", peerLibName_ " << peerLibName_);
+                return false;
+            }
+
+            return true;
+        #endif
         }
 
-        typedef void (PEER_API * LPTS_XXXX)(LPNETINTERFACE );
-        LPTS_XXXX ts = (LPTS_XXXX)lib_.symbol(sym_name_);
-        if (ts) {
-            ts(&ipeer_);
-            LOG_DEBUG("[start_peer] find symbol " << sym_name_);
-        } else {
-            LOG_ERROR("Failed to find symbol: " << sym_name_ << ", libName " << libName_);
-            return framework::system::logic_error::failed_some;
-        }
-#endif
+        bool WorkerModule::start_peer()
+        {
+            if (!needStartPeer_){
+                portMgr_.set_port(just::common::vod,port_);
+                LOG_DEBUG("[start_peer] do not need to start, set port_ " << port_);
+                return true;
+            }
+
+            STARTPARAM start_param;
             // start param
             //memset(&start_param, 0, sizeof(start_param));
-        if (!libToogle_) {
             start_param.szDiskPath[0] = '\0';
             start_param.szConfigPath[0] = '\0';
             start_param.szPeerGuid[0] = '\0';
@@ -222,19 +245,14 @@ namespace just
             if (ipeer_.Startup != NULL) {
                 port_ = ipeer_.Startup(&start_param);
             }
-        }
-        else
-        {
-            LOG_INFO("[use peer exported from ppbox]");
-        }
             portMgr_.set_port(just::common::vod,port_);
 
-            return ec;
+            return true;
         }
 
         void WorkerModule::stop_peer()
         {
-            if (!libToogle_) {
+            if (needStartPeer_) {
                 if (ipeer_.Cleanup != NULL) {
                     // peer Startup had execute Clearup already
                     LOG_DEBUG("[stop_peer] beg");

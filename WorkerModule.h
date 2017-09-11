@@ -43,7 +43,8 @@ namespace just
                 boost::system::error_code const & ec);
 
         private:
-            boost::system::error_code start_peer();
+            bool prepare_interface();
+            bool start_peer();
 
             void stop_peer();
 
@@ -58,13 +59,17 @@ namespace just
             just::common::PortManager& portMgr_;
             boost::uint16_t port_;
             boost::uint8_t buffer_size_;
-            std::string libName_;
-            bool libToogle_;
-            std::string sym_name_;
         private:
             clock_timer timer_;
+            bool needStartPeer_;
 #ifndef JUST_STATIC_BIND_PEER_LIB
             framework::library::Library lib_;
+            // whether to load peer so
+            bool needLoadPeer_;
+            // peer so name, only used when shouldLoadPeer_ is true
+            std::string peerLibName_;
+            // peer symbol name, used when shouldLoadPeer_ is true and peerLibName_ not empty
+            std::string sym_name_;
 #endif
             NETINTERFACE ipeer_;
             
