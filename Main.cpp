@@ -32,7 +32,7 @@ namespace just
             util::daemon::use_module<just::common::Debuger>(daemon);
             util::daemon::use_module<just::common::PortManager>(daemon);
             util::daemon::use_module<just::peer_worker::WorkerModule>(daemon);
-            util::daemon::use_module<just::peer_worker::StatusProxy>(daemon);
+            //util::daemon::use_module<just::peer_worker::StatusProxy>(daemon);
         }
 
     }
